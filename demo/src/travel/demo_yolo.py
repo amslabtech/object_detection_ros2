@@ -9,6 +9,7 @@ from std_msgs.msg import String
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 from object_detection.yolo import YOLO
+from object_detection.utils import generate_colors, make_r_image
 from PIL import Image as PIL_Image
 from PIL import ImageDraw
 from PIL import ImageFont
@@ -38,16 +39,9 @@ class DemoYolo(Node):
         classes_path = os.path.expanduser(self.yolo_args["classes_path"])
         with open(classes_path) as f:
             class_num = len(f.readlines())
-        hsv_tuples = [(x / class_num, 1., 1.)
-                        for x in range(class_num)]
-        colors = list(map(lambda x: colorsys.hsv_to_rgb(*x), hsv_tuples))
-        colors = list(
-            map(lambda x: (int(x[0] * 255), int(x[1] * 255), int(x[2] * 255)),
-                colors))
-        np.random.seed(10101)  # Fixed seed for consistent colors across runs.
-        np.random.shuffle(colors)  # Shuffle colors to decorrelate adjacent classes.
-        np.random.seed(None)  # Reset seed to default.
+        colors = generate_colors(class_num)
         self.colors = colors
+
 
     def locate(self,oimg):
         try:
@@ -64,42 +58,9 @@ class DemoYolo(Node):
             font = ImageFont.load_default()
             thickness = (image.size[0] + image.size[1]) // 300
 
-            for obj in reversed(objects):
-
-                top, left, bottom, right = obj['bbox']
-                score = obj['score']
-                class_name = obj['class_name']
-                classs_id = obj['class_id']
-                color = self.colors[classs_id]
-
-                predicted_class =class_name
-                center_y = (top + bottom) / 2.0
-                center_x = (left + right) / 2.0
-                area = (bottom - top) * (right - left)
-
-                # threshould
-                if(score < 0.01):
-                    continue
-
-                label = '{} {:.2f}'.format(predicted_class, score)
-                draw = ImageDraw.Draw(image)
-                label_size = draw.textsize(label, font)
-    
-                if top - label_size[1] >= 0:
-                    text_origin = np.array([left, top - label_size[1]])
-                else:
-                    text_origin = np.array([left, top + 1])
-                for i in range(thickness):
-                    draw.rectangle(
-                        [left + i, top + i, right - i, bottom - i],
-                        outline=self.colors[classs_id])
-                draw.rectangle(
-                    [tuple(text_origin), tuple(text_origin + label_size)],
-                    fill=self.colors[classs_id])
-                draw.text(tuple(text_origin), label, fill=(0, 0, 0), font=font)
-                del draw
+            r_image = make_r_image(image, objects, self.colors)
             
-            result = np.asarray(image)
+            result = np.asarray(r_image)
             cv2.namedWindow("result", cv2.WINDOW_NORMAL)
             cv2.imshow("result", result)
 
