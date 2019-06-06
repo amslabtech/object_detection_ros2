@@ -15,14 +15,17 @@ from PIL import ImageDraw
 from PIL import ImageFont
 import colorsys
 import matplotlib.pyplot as plt
-
+import json
 
 class DemoYolo(Node):
 
     def __init__(self):
         super().__init__('traveller')
+        self.i = 0
         self.bridge = CvBridge()
-        self.sub = self.create_subscription(Image,'/cam/custom_camera/image_raw', self.locate)
+        self.pub = self.create_publisher(String, '/demo/objects')
+        self.pub = self.create_publisher(Image, '/demo/r_image')
+        self.sub = self.create_subscription(Image,'/demo/image_raw', self.locate)
         data_folder = "src/travel/object_detection/model_data/yolo3/coco/"
         
         yolo_args = {
@@ -42,7 +45,6 @@ class DemoYolo(Node):
         colors = generate_colors(class_num)
         self.colors = colors
 
-
     def locate(self,oimg):
         try:
             img = self.bridge.imgmsg_to_cv2(oimg, "bgr8")
@@ -55,22 +57,14 @@ class DemoYolo(Node):
 
             objects = result['objects']
 
-            font = ImageFont.load_default()
-            thickness = (image.size[0] + image.size[1]) // 300
-
             r_image = make_r_image(image, objects, self.colors)
             
             result = np.asarray(r_image)
-            cv2.namedWindow("result", cv2.WINDOW_NORMAL)
-            cv2.imshow("result", result)
+
+            self.pub.publish(self.bridge.cv2_to_imgmsg(result, "bgr8"))
 
         except CvBridgeError as e:
            print(e)
-
-        #cv2.imshow("Image windowt",img)
-        cv2.imshow("Image windowt1", hsv_img)
-        cv2.waitKey(3)
-
 
 def main(args=None):
 

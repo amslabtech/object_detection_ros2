@@ -12,11 +12,14 @@ $ sudo apt install python3-argcomplete
 $ sudo apt install python3-colcon-common-extensions
 ```
 
-Prepare object_detection
+## Prepare object_detection
 ```
 cd demo/src/travel/
 https://github.com/amslabtech/object_detection.git
-Prepare package and model by following README in object_detection
+cd object_detection/
+ln -s keras-yolo3/yolo3 .
+wget https://pjreddie.com/media/files/yolov3.weights
+python3 keras-yolo3/convert.py yolov3.cfg yolov3.weights model_data/yolo3/coco/yolo.h5
 ```
 
 ## Run

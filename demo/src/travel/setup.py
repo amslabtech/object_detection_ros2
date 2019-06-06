@@ -5,9 +5,12 @@ package_name = 'control'
 setup(
     name=package_name,
     version='0.0.0',
-    packages=['object_detection','object_detection.yolo3'],
+    packages=['object_detection','yolo3'],
+    package_dir={'yolo3': 'object_detection/yolo3'},
     py_modules=[
-        'demo_yolo',
+        'image_publisher',
+        'object_detection_publisher',
+        'agent'
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -27,7 +30,9 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'demo_yolo = demo_yolo:main',
+            'agent = agent:main',
+            'image_publisher = image_publisher:main',
+            'object_detection_publisher = object_detection_publisher:main',
         ],
     },
 )
