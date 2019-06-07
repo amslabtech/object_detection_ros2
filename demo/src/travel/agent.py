@@ -17,9 +17,9 @@ class Agent(Node):
     def __init__(self):
         super().__init__('traveller')
         self.bridge = CvBridge()
-        self.sub_img = self.create_subscription(Image,'/demo/image_raw', self.image_sub)
-        self.sub_r_img = self.create_subscription(Image,'/demo/r_image', self.r_image_sub)
-        self.sub_objects = self.create_subscription(String,'/demo/objects', self.objects_sub)
+        self.sub_img = self.create_subscription(Image,'/amsl/demo/image_raw', self.image_sub)
+        self.sub_r_img = self.create_subscription(Image,'/amsl/demo/r_image', self.r_image_sub)
+        self.sub_objects = self.create_subscription(String,'/amsl/demo/objects', self.objects_sub)
 
     def image_sub(self,oimg):
         try:
@@ -30,8 +30,6 @@ class Agent(Node):
 
         cv2.imshow("Image windowt",img)
         cv2.waitKey(3)
-    
-    # def object_detection_sub(self,objects)
 
     def r_image_sub(self,r_img):
         try:

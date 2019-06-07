@@ -15,7 +15,7 @@ class Img(Node):
 
     def __init__(self):
         super().__init__('text')
-        self.pub = self.create_publisher(Image, '/demo/image_raw')
+        self.pub = self.create_publisher(Image, '/amsl/demo/image_raw')
         self.bridge = CvBridge()
         self.check()
 

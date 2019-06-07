@@ -17,15 +17,26 @@ import colorsys
 import matplotlib.pyplot as plt
 import json
 
+class PyEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        elif isinstance(obj, np.floating):
+            return float(obj)
+        elif isinstance(obj, np.ndarray):
+            return obj.tolist()
+        else:
+            return super(PyEncoder, self).default(obj)
+
 class ObjectDetection(Node):
 
     def __init__(self):
         super().__init__('traveller')
         self.i = 0
         self.bridge = CvBridge()
-        self.pub_str = self.create_publisher(String, '/demo/objects')
-        self.pub_img = self.create_publisher(Image, '/demo/r_image')
-        self.sub = self.create_subscription(Image,'/demo/image_raw', self.locate)
+        self.pub_obj = self.create_publisher(String, '/amsl/demo/objects')
+        self.pub_img = self.create_publisher(Image, '/amsl/demo/r_image')
+        self.sub = self.create_subscription(Image,'/amsl/demo/image_raw', self.locate)
         data_folder = "src/travel/object_detection/model_data/yolo3/coco/"
         
         yolo_args = {
@@ -52,16 +63,16 @@ class ObjectDetection(Node):
 
             # Object detection
             image = PIL_Image.fromarray(img)
-
             result = self.model.detect_image(image)
-
             objects = result['objects']
-
             r_image = make_r_image(image, objects, self.colors)
-            
-            result = np.asarray(r_image)
 
+            result = np.asarray(r_image)
             self.pub_img.publish(self.bridge.cv2_to_imgmsg(result, "bgr8"))
+
+            string = String()
+            string.data = json.dumps(objects,cls = PyEncoder)
+            self.pub_obj.publish(string)
 
         except CvBridgeError as e:
            print(e)
