@@ -17,7 +17,12 @@ class Agent(Node):
     def __init__(self):
         super().__init__('traveller')
         self.bridge = CvBridge()
-        self.sub_img = self.create_subscription(Image,'/amsl/demo/image_raw', self.image_sub)
+        # from image_publisher
+        # self.sub_img = self.create_subscription(Image,'/amsl/demo/image_raw', self.image_sub)
+
+        # from gazebo
+        self.sub_img = self.create_subscription(Image,'/cam/custom_camera/image_raw', self.image_sub)
+
         self.sub_r_img = self.create_subscription(Image,'/amsl/demo/r_image', self.r_image_sub)
         self.sub_objects = self.create_subscription(String,'/amsl/demo/objects', self.objects_sub)
 

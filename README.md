@@ -27,6 +27,16 @@ $ wget https://github.com/matterport/Mask_RCNN/releases/download/v2.0/mask_rcnn_
 
 ```
 
+## Gazebo
+```
+$ sudo apt install ros-crystal-gazebo-*
+$ cd gazebo
+$ source /opt/ros/crystal/setup.bash
+$ source /usr/share/gazebo/setup.sh
+$ gazebo --verbose demo_world56.world
+$ killall -9 gazebo & killall -9 gzserver  & killall -9 gzclient
+```
+
 ## Run
 ```
 $ cd demo
