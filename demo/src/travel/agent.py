@@ -22,9 +22,9 @@ class Agent(Node):
         self.sub_objects = self.create_subscription(String,'/amsl/demo/objects', self.objects_sub)
 
     def image_sub(self,oimg):
+        print("image sub")
         try:
             img = self.bridge.imgmsg_to_cv2(oimg, "bgr8")
-
         except CvBridgeError as e:
            print(e)
 

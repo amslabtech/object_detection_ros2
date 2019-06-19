@@ -32,19 +32,27 @@ class ObjectDetection(Node):
 
     def __init__(self):
         super().__init__('traveller')
-        self.i = 0
         self.bridge = CvBridge()
         self.pub_obj = self.create_publisher(String, '/amsl/demo/objects')
         self.pub_img = self.create_publisher(Image, '/amsl/demo/r_image')
         self.sub = self.create_subscription(Image,'/amsl/demo/image_raw', self.locate)
-        data_folder = "src/travel/object_detection/model_data/yolo3/coco/"
+
+        self.model_name = 'yolo'
         
-        yolo_args = {
-            "model_path": data_folder+"yolo.h5",
-            "score": 0.01,
-            "anchors_path": data_folder+"anchors.txt",
-            "classes_path": data_folder+"classes.txt",
-                }
+        yolo_data_folder = "src/travel/object_detection/model_data/yolo3/coco/"
+        mrcnn_data_folder = "src/travel/object_detection/model_data/mrcnn/coco/"
+
+        if self.model_name == 'mrcnn':
+            classes_path = os.path.join(mrcnn_data_folder, "classes.txt")
+            self.model = MaskRCNN(os.path.join(mrcnn_data_folder, "mask_rcnn_coco.h5"), classes_path)
+            classes_path = os.path.expanduser(classes_path)
+        else:
+            yolo_args = {
+                "model_path": os.path.join(yolo_data_folder, "yolo.h5"),
+                "score": 0.01,
+                "anchors_path": os.path.join(yolo_data_folder, "anchors.txt"),
+                "classes_path": os.path.join(yolo_data_folder, "classes.txt"),
+            }
 
         self.yolo_args = dict((k, v) for k, v in yolo_args.items() if v)
         self.model = YOLO(**self.yolo_args)

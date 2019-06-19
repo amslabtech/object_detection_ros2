@@ -19,6 +19,12 @@ $ cd object_detection/
 $ ln -s keras-yolo3/yolo3 .
 $ wget https://pjreddie.com/media/files/yolov3.weights
 $ python3 keras-yolo3/convert.py yolov3.cfg yolov3.weights model_data/yolo3/coco/yolo.h5
+
+$ git clone https://github.com/matterport/Mask_RCNN.git
+$ ln -s Mask_RCNN/mrcnn .
+$ pip3 install -r Mask_RCNN/requirements.txt
+$ wget https://github.com/matterport/Mask_RCNN/releases/download/v2.0/mask_rcnn_coco.h5 -P model_data/mrcnn/coco/
+
 ```
 
 ## Run
