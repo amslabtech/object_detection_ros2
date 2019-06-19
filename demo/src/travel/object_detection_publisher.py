@@ -35,7 +35,12 @@ class ObjectDetection(Node):
         self.bridge = CvBridge()
         self.pub_obj = self.create_publisher(String, '/amsl/demo/objects')
         self.pub_img = self.create_publisher(Image, '/amsl/demo/r_image')
-        self.sub = self.create_subscription(Image,'/amsl/demo/image_raw', self.locate)
+
+        # from image_publisher
+        # self.sub_img = self.create_subscription(Image,'/amsl/demo/image_raw', self.image_sub)
+
+        # from gazebo
+        self.sub = self.create_subscription(Image,'/cam/custom_camera/image_raw', self.locate)
 
         self.model_name = 'yolo'
         
